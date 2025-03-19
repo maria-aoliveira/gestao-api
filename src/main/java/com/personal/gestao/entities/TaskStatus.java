@@ -1,16 +1,14 @@
 package com.personal.gestao.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Data
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "task_status")
 public class TaskStatus {
 

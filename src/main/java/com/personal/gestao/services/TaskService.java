@@ -5,14 +5,14 @@ import com.personal.gestao.dtos.TaskDto;
 import java.util.List;
 
 public interface TaskService {
-    TaskDto criarTask(TaskDto taskDTO);
+    TaskDto createTask(TaskDto taskDTO);
 
-    List<TaskDto> listarTasks();
+    List<TaskDto> listAllTasks();
 
-    TaskDto atualizarTask(Long id, TaskDto taskDTO);
+    TaskDto updateTask(Long id, TaskDto taskDTO);
 
-    void excluirTask(Long id);
+    void deleteTask(Long id);
 
-    TaskDto buscarTaskPorId(Long id);
+    TaskDto findTaskById(Long id);
 
 }

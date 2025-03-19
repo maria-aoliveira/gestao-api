@@ -1,6 +1,9 @@
 package com.personal.gestao.dtos;
 
+import com.personal.gestao.entities.Category;
 import com.personal.gestao.entities.Task;
+import com.personal.gestao.entities.TaskStatus;
+import com.personal.gestao.entities.User;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -17,7 +20,7 @@ public class TaskDto {
     private Long taskStatusId;
     private Timestamp dueDate;
 
-    public static TaskDto fromEntity(Task task) {
+    public static TaskDto toTaskDto(Task task) {
         return new TaskDto(
                 task.getId(),
                 task.getTitle(),
@@ -27,5 +30,17 @@ public class TaskDto {
                 task.getTaskStatus().getId(),
                 task.getDueDate()
         );
+    }
+
+    public Task toEntity(User user, Category category, TaskStatus taskStatus) {
+        Task task = new Task();
+        task.setId(this.id);
+        task.setTitle(this.title);
+        task.setDescription(this.description);
+        task.setDueDate(this.dueDate);
+        task.setUser(user);
+        task.setCategory(category);
+        task.setTaskStatus(taskStatus);
+        return task;
     }
 }

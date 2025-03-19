@@ -32,7 +32,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDto criarTask(TaskDto taskDTO) {
+    public TaskDto createTask(TaskDto taskDTO) {
         User user = userRepository.findById(taskDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Category category = categoryRepository.findById(taskDTO.getCategoryId())
@@ -40,29 +40,23 @@ public class TaskServiceImpl implements TaskService {
         TaskStatus taskStatus = taskStatusRepository.findById(taskDTO.getTaskStatusId())
                 .orElseThrow(() -> new RuntimeException("TaskStatus not found"));
 
-        Task task = new Task();
-        task.setTitle(taskDTO.getTitle());
-        task.setDescription(taskDTO.getDescription());
-        task.setUser(user);
-        task.setCategory(category);
-        task.setTaskStatus(taskStatus);
-        task.setDueDate(taskDTO.getDueDate());
+        Task task = taskDTO.toEntity(user, category, taskStatus);
 
         taskRepository.save(task);
 
-        return TaskDto.fromEntity(task);
+        return TaskDto.toTaskDto(task);
     }
 
     @Override
-    public List<TaskDto> listarTasks() {
+    public List<TaskDto> listAllTasks() {
         List<Task> tasks = taskRepository.findAll();
         return tasks.stream()
-                .map(TaskDto::fromEntity)
+                .map(TaskDto::toTaskDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public TaskDto atualizarTask(Long id, TaskDto taskDTO) {
+    public TaskDto updateTask(Long id, TaskDto taskDTO) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
@@ -72,18 +66,18 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
 
-        return TaskDto.fromEntity(task);
+        return TaskDto.toTaskDto(task);
     }
 
     @Override
-    public void excluirTask(Long id) {
+    public void deleteTask(Long id) {
         taskRepository.deleteById(id);
     }
 
     @Override
-    public TaskDto buscarTaskPorId(Long id) {
+    public TaskDto findTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        return TaskDto.fromEntity(task);
+        return TaskDto.toTaskDto(task);
     }
 }

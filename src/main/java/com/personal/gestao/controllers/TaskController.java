@@ -3,8 +3,7 @@ package com.personal.gestao.controllers;
 import com.personal.gestao.dtos.TaskDto;
 import com.personal.gestao.services.TaskService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -12,33 +11,39 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TaskDto criarTask(@RequestBody @Valid TaskDto taskDTO) {
-        return taskService.criarTask(taskDTO);
+    public ResponseEntity<TaskDto> criarTask(@RequestBody @Valid TaskDto taskDTO) {
+        TaskDto createdTask = taskService.createTask(taskDTO);
+        return ResponseEntity.status(201).body(createdTask);
     }
 
     @GetMapping
-    public List<TaskDto> listarTasks() {
-        return taskService.listarTasks();
+    public ResponseEntity<List<TaskDto>> listarTasks() {
+        List<TaskDto> tasks = taskService.listAllTasks();
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
-    public TaskDto buscarTaskPorId(@PathVariable Long id) {
-        return taskService.buscarTaskPorId(id);
+    public ResponseEntity<TaskDto> buscarTaskPorId(@PathVariable Long id) {
+        TaskDto task = taskService.findTaskById(id);
+        return ResponseEntity.ok(task);
     }
 
     @PutMapping("/{id}")
-    public TaskDto atualizarTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDTO) {
-        return taskService.atualizarTask(id, taskDTO);
+    public ResponseEntity<TaskDto> atualizarTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDTO) {
+        TaskDto updatedTask = taskService.updateTask(id, taskDTO);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluirTask(@PathVariable Long id) {
-        taskService.excluirTask(id);
+    public ResponseEntity<Void> excluirTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 }

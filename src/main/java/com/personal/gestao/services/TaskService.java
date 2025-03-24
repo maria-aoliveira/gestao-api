@@ -15,4 +15,5 @@ public interface TaskService {
 
     TaskDto findTaskById(Long id);
 
+    TaskDto findByTaskTitle(String name);
 }

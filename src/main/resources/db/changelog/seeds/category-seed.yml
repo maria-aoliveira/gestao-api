@@ -1,0 +1,22 @@
+
+---
+# seed/category-seed.yml
+
+databaseChangeLog:
+  - changeSet:
+      id: seed-2
+      author: Maria
+      changes:
+        - insert:
+            tableName: category
+            columns:
+              - column:
+                  name: name
+                  value: Trabalho
+        - insert:
+            tableName: category
+            columns:
+              - column:
+                  name: name
+                  value: Pessoal
+

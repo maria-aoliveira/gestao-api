@@ -48,4 +48,9 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/by-name")
+    public ResponseEntity<CategoryDto> findByCategory(@RequestParam String name){
+        CategoryDto category = categoryService.findByCategory(name);
+        return ResponseEntity.ok(category);
+    }
 }

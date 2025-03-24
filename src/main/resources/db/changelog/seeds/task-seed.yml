@@ -1,0 +1,27 @@
+
+---
+# seed/task-seed.yml
+
+databaseChangeLog:
+  - changeSet:
+      id: seed-4
+      author: Maria
+      changes:
+        - insert:
+            tableName: task
+            columns:
+              - column:
+                  name: title
+                  value: Tarefa de exemplo
+              - column:
+                  name: description
+                  value: Esta é uma tarefa criada como exemplo.
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: category_id
+                  valueNumeric: 1
+              - column:
+                  name: task_status_id
+                  valueNumeric: 1

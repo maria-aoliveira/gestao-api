@@ -11,8 +11,10 @@ import com.personal.gestao.repositories.TaskRepository;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.repositories.UserRepository;
 import com.personal.gestao.services.TaskService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,10 +36,11 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto createTask(TaskDto taskDTO) {
-        User user = userRepository.findById(taskDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        validateCreateUpdate(taskDTO);
+        User user = findUserById(taskDTO.getUserId());
         Category category = findCategoryIfPresent(taskDTO.getCategoryId());
         TaskStatus taskStatus = findOrDefaultStatus(taskDTO.getTaskStatusId());
+
         Task task = taskDTO.toEntity(user, category, taskStatus);
 
         taskRepository.save(task);
@@ -55,6 +58,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto updateTask(Long id, TaskDto taskDTO) {
+        taskDTO.setId(id);
+        validateCreateUpdate(taskDTO);
+
         Task task = getTaskEntityById(id);
 
         task.setTitle(taskDTO.getTitle());
@@ -77,8 +83,20 @@ public class TaskServiceImpl implements TaskService {
         return TaskDto.toTaskDto(getTaskEntityById(id));
     }
 
+    @Override
+    public TaskDto findByTaskTitle(String title){
+        Task task = taskRepository.findByTitle(title)
+                .orElseThrow(()-> new ResourceNotFoundException("Task not found"));
+        return TaskDto.toTaskDto(task);
+    }
+
     public Task getTaskEntityById(Long id){
         return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+    }
+
+    private User findUserById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private Category findCategoryIfPresent(Long categoryId) {
@@ -96,4 +114,28 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Default TaskStatus not found"));
     }
 
+    private void validateTaskTitle(String title){
+        if (title == null || title.isBlank()){
+            throw new IllegalArgumentException("Task title is mandatory");
+        }
+    }
+
+    private void validateDueDate(Timestamp dueDate) {
+        if (dueDate != null && dueDate.before(new Timestamp(System.currentTimeMillis()))) {
+            throw new IllegalArgumentException("Due date must be in the future");
+        }
+    }
+
+    private void validateCreateUpdate(TaskDto taskDto){
+        validateDueDate(taskDto.getDueDate());
+        validateTaskTitle(taskDto.getTitle());
+        taskRepository.findByTitle(taskDto.getTitle()).ifPresent(existingCategory -> {
+            boolean isNew = taskDto.getId() == null;
+            boolean isDifferent = !existingCategory.getId().equals(taskDto.getId());
+
+            if (isNew || isDifferent) {
+                throw new DataIntegrityViolationException("Category already exists");
+            }
+        });
+    }
 }

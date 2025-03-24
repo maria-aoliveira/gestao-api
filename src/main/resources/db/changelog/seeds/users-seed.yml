@@ -1,0 +1,24 @@
+
+---
+# seed/users-seed.yml
+
+databaseChangeLog:
+  - changeSet:
+      id: seed-1
+      author: Maria
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: name
+                  value: Administrador
+              - column:
+                  name: password
+                  value: admin123
+              - column:
+                  name: email
+                  value: admin@email.com

@@ -36,6 +36,24 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/{by-username}")
+    public ResponseEntity<UserDto> findUserByUsername(@RequestParam String username) {
+        UserDto user = userService.findByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{by-name}")
+    public ResponseEntity<UserDto> findUserByName(@RequestParam String name) {
+        UserDto user = userService.findByUsername(name);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{by-email}")
+    public ResponseEntity<UserDto> findUserByEmail(@RequestParam String email) {
+        UserDto user = userService.findByUsername(email);
+        return ResponseEntity.ok(user);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
         UserDto updatedUser = userService.updateUser(id, userDto);

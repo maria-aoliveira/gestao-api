@@ -1,0 +1,26 @@
+---
+# seed/task_status-seed.yml
+
+databaseChangeLog:
+  - changeSet:
+      id: seed-3
+      author: Maria
+      changes:
+        - insert:
+            tableName: task_status
+            columns:
+              - column:
+                  name: status
+                  value: New
+        - insert:
+            tableName: task_status
+            columns:
+              - column:
+                  name: status
+                  value: In Progress
+        - insert:
+            tableName: task_status
+            columns:
+              - column:
+                  name: status
+                  value: Completed

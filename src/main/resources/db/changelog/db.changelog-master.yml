@@ -1,151 +1,19 @@
 databaseChangeLog:
-  # Tabela para Users
-  - changeSet:
-      id: 1
-      author: Maria
-      changes:
-        - createTable:
-            tableName: users
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: username
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: name
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: password
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: true
-              - column:
-                  name: email
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-              - column:
-                  name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-
-  # Tabela para Category
-  - changeSet:
-      id: 2
-      author: Maria
-      changes:
-        - createTable:
-            tableName: category
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: name
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-
-  # Tabela para TaskStatus
-  - changeSet:
-      id: 3
-      author: Maria
-      changes:
-        - createTable:
-            tableName: task_status
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: status
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-                  value: New
-
-  # Tabela para Task
-  - changeSet:
-      id: 4
-      author: Maria
-      changes:
-        - createTable:
-            tableName: task
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: title
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: description
-                  type: TEXT
-                  constraints:
-                    nullable: true
-              - column:
-                  name: due_date
-                  type: TIMESTAMP
-                  constraints:
-                    nullable: true
-              - column:
-                  name: user_id
-                  type: BIGINT
-              - column:
-                  name: category_id
-                  type: BIGINT
-                  constraints:
-                    nullable: true
-              - column:
-                  name: task_status_id
-                  type: BIGINT
-                  constraints:
-                    nullable: true
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-              - column:
-                  name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-              - foreignKeyConstraint:
-                  baseColumnNames: user_id
-                  baseTableName: task
-                  referencedColumnNames: id
-                  referencedTableName: users
-              - foreignKeyConstraint:
-                  baseColumnNames: category_id
-                  baseTableName: task
-                  referencedColumnNames: id
-                  referencedTableName: category
-              - foreignKeyConstraint:
-                  baseColumnNames: task_status_id
-                  baseTableName: task
-                  referencedColumnNames: id
-                  referencedTableName: task_status
+  # Arquivos de estrutura de tabelas
+  - include:
+      file: db/changelog/tables/users.yml
+  - include:
+      file: db/changelog/tables/category.yml
+  - include:
+      file: db/changelog/tables/task_status.yml
+  - include:
+      file: db/changelog/tables/task.yml
+  # seeds de tabelas
+  - include:
+      file: db/changelog/seeds/users-seed.yml
+  - include:
+      file: db/changelog/seeds/category-seed.yml
+  - include:
+      file: db/changelog/seeds/task_status-seed.yml
+  - include:
+      file: db/changelog/seeds/task-seed.yml

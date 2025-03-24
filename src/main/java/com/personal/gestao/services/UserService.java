@@ -16,4 +16,9 @@ public interface UserService {
 
     UserDto findUserById(Long id);
 
+    UserDto findByUsername(String username);
+
+    UserDto findByName(String name);
+
+    UserDto findByEmail(String email);
 }

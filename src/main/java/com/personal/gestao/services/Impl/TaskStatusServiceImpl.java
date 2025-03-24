@@ -4,10 +4,12 @@ import com.personal.gestao.dtos.TaskStatusDto;
 import com.personal.gestao.entities.TaskStatus;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.services.TaskStatusService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class TaskStatusServiceImpl implements TaskStatusService {
 
     private final TaskStatusRepository taskStatusRepository;
@@ -33,7 +35,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     public TaskStatusDto updateStatus(Long id, TaskStatusDto taskStatusDto) {
         TaskStatus taskStatus = taskStatusRepository.findById(id).orElseThrow(() ->
                 new RuntimeException("Status not found"));
-        taskStatus.setStatus(taskStatus.getStatus());
+        taskStatus.setStatus(taskStatusDto.getStatus());
         taskStatus = taskStatusRepository.save(taskStatus);
         return TaskStatusDto.toTaskStatusDto(taskStatus);
     }

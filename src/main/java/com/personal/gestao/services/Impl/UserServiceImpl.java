@@ -5,10 +5,12 @@ import com.personal.gestao.entities.User;
 import com.personal.gestao.repositories.UserRepository;
 
 import com.personal.gestao.services.UserService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

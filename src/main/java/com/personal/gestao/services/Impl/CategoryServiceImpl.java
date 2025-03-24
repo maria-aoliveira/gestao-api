@@ -5,10 +5,12 @@ import com.personal.gestao.entities.Category;
 import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired

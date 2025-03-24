@@ -2,11 +2,13 @@ package com.personal.gestao.services.Impl;
 
 import com.personal.gestao.dtos.TaskStatusDto;
 import com.personal.gestao.entities.TaskStatus;
+import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.services.TaskStatusService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +36,7 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Override
     public TaskStatusDto updateStatus(Long id, TaskStatusDto taskStatusDto) {
         TaskStatus taskStatus = taskStatusRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Status not found"));
+                new ResourceNotFoundException("Status not found"));
         taskStatus.setStatus(taskStatusDto.getStatus());
         taskStatus = taskStatusRepository.save(taskStatus);
         return TaskStatusDto.toTaskStatusDto(taskStatus);
@@ -42,13 +44,25 @@ public class TaskStatusServiceImpl implements TaskStatusService {
 
     @Override
     public void deleteStatus(Long id) {
+        this.findStatusById(id);
         taskStatusRepository.deleteById(id);
     }
 
     @Override
     public TaskStatusDto findStatusById(Long id) {
-        TaskStatus taskStatus = taskStatusRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Status not found"));
+        return TaskStatusDto.toTaskStatusDto(getStatusEntityById(id));
+    }
+
+    @Override
+    public TaskStatusDto findByStatus(String status){
+        TaskStatus taskStatus = taskStatusRepository.findByStatus(status).orElseThrow(() ->
+                new ResourceNotFoundException("Status '" + status + "'not found"));;
         return TaskStatusDto.toTaskStatusDto(taskStatus);
+    }
+
+
+    public TaskStatus getStatusEntityById(Long id){
+        return taskStatusRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Status not found"));
     }
 }

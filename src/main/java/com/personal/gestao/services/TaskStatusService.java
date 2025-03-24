@@ -1,8 +1,6 @@
 package com.personal.gestao.services;
 
-import com.personal.gestao.dtos.TaskDto;
 import com.personal.gestao.dtos.TaskStatusDto;
-import com.personal.gestao.entities.TaskStatus;
 
 import java.util.List;
 
@@ -16,4 +14,6 @@ public interface TaskStatusService {
     void deleteStatus(Long id);
 
     TaskStatusDto findStatusById(Long id);
+
+    TaskStatusDto findByStatus(String status);
 }

@@ -48,4 +48,10 @@ public class TaskStatusController {
         taskStatusService.deleteStatus(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-status")
+    public ResponseEntity<TaskStatusDto> getByStatus(@RequestParam String status) {
+        return ResponseEntity.ok(taskStatusService.findByStatus(status));
+    }
+
 }

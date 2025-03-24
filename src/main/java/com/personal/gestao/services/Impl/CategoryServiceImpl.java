@@ -2,6 +2,7 @@ package com.personal.gestao.services.Impl;
 
 import com.personal.gestao.dtos.CategoryDto;
 import com.personal.gestao.entities.Category;
+import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = getCategoryEntityById(id);
         category.setName(categoryDto.getName());
         categoryRepository.save(category);
 
@@ -39,13 +40,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
+        getCategoryEntityById(id);
         categoryRepository.deleteById(id);
     }
 
     @Override
     public CategoryDto findCategoryById(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        return CategoryDto.toCategoryDto(category);
+        return CategoryDto.toCategoryDto(getCategoryEntityById(id));
     }
+
+    private Category getCategoryEntityById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
+
+
 }

@@ -82,6 +82,7 @@ databaseChangeLog:
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
+                  value: New
 
   # Tabela para Task
   - changeSet:
@@ -105,18 +106,26 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
+                  constraints:
+                    nullable: true
               - column:
                   name: due_date
                   type: TIMESTAMP
+                  constraints:
+                    nullable: true
               - column:
                   name: user_id
                   type: BIGINT
               - column:
                   name: category_id
                   type: BIGINT
+                  constraints:
+                    nullable: true
               - column:
                   name: task_status_id
                   type: BIGINT
+                  constraints:
+                    nullable: true
               - column:
                   name: created_at
                   type: TIMESTAMP

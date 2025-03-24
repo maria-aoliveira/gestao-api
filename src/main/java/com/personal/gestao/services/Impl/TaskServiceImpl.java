@@ -5,6 +5,7 @@ import com.personal.gestao.entities.Category;
 import com.personal.gestao.entities.Task;
 import com.personal.gestao.entities.TaskStatus;
 import com.personal.gestao.entities.User;
+import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.repositories.TaskRepository;
 import com.personal.gestao.repositories.TaskStatusRepository;
@@ -34,12 +35,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDto createTask(TaskDto taskDTO) {
         User user = userRepository.findById(taskDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Category category = categoryRepository.findById(taskDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        TaskStatus taskStatus = taskStatusRepository.findById(taskDTO.getTaskStatusId())
-                .orElseThrow(() -> new RuntimeException("TaskStatus not found"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Category category = findCategoryIfPresent(taskDTO.getCategoryId());
+        TaskStatus taskStatus = findOrDefaultStatus(taskDTO.getTaskStatusId());
         Task task = taskDTO.toEntity(user, category, taskStatus);
 
         taskRepository.save(task);
@@ -57,8 +55,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto updateTask(Long id, TaskDto taskDTO) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+        Task task = getTaskEntityById(id);
 
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
@@ -71,13 +68,32 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long id) {
+        getTaskEntityById(id);
         taskRepository.deleteById(id);
     }
 
     @Override
     public TaskDto findTaskById(Long id) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-        return TaskDto.toTaskDto(task);
+        return TaskDto.toTaskDto(getTaskEntityById(id));
     }
+
+    public Task getTaskEntityById(Long id){
+        return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+    }
+
+    private Category findCategoryIfPresent(Long categoryId) {
+        if (categoryId == null) return null;
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
+
+    private TaskStatus findOrDefaultStatus(Long statusId) {
+        if (statusId != null) {
+            return taskStatusRepository.findById(statusId)
+                    .orElseThrow(() -> new ResourceNotFoundException("TaskStatus not found"));
+        }
+        return taskStatusRepository.findByStatus("New")
+                .orElseThrow(() -> new ResourceNotFoundException("Default TaskStatus not found"));
+    }
+
 }

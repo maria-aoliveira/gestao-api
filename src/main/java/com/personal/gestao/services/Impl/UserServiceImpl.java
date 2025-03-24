@@ -2,6 +2,7 @@ package com.personal.gestao.services.Impl;
 
 import com.personal.gestao.dtos.UserDto;
 import com.personal.gestao.entities.User;
+import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.repositories.UserRepository;
 
 import com.personal.gestao.services.UserService;
@@ -38,8 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getUserEntityById(id);
 
         user.setUsername(userDto.getUsername());
         user.setName(userDto.getName());
@@ -51,13 +51,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        getUserEntityById(id);
         userRepository.deleteById(id);
     }
 
     @Override
     public UserDto findUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return UserDto.toUserDto(user);
+        return UserDto.toUserDto(getUserEntityById(id));
+    }
+
+    public User getUserEntityById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

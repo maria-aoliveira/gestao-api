@@ -1,19 +1,20 @@
 package com.personal.gestao.services;
 
-import com.personal.gestao.dtos.CategoryDto;
+import com.personal.gestao.dtos.category.CategoryRequestDto;
+import com.personal.gestao.dtos.category.CategoryResponseDto;
 
 import java.util.List;
 
 public interface CategoryService {
-    CategoryDto createCategory(CategoryDto categoryDto);
+    CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto);
 
-    List<CategoryDto> listAllCategories();
+    List<CategoryResponseDto> listAllCategories();
 
-    CategoryDto updateCategory(Long id, CategoryDto categoryDto);
+    CategoryResponseDto updateCategory(Long id, CategoryRequestDto categoryRequestDto);
 
     void deleteCategory(Long id);
 
-    CategoryDto findCategoryById(Long id);
+    CategoryResponseDto findCategoryById(Long id);
 
-    CategoryDto findByCategory(String name);
+    CategoryResponseDto findByCategory(String name);
 }

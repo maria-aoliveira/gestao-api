@@ -1,6 +1,7 @@
 package com.personal.gestao.controllers;
 
-import com.personal.gestao.dtos.CategoryDto;
+import com.personal.gestao.dtos.category.CategoryRequestDto;
+import com.personal.gestao.dtos.category.CategoryResponseDto;
 import com.personal.gestao.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,26 +20,26 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory (@RequestBody @Valid CategoryDto categoryDto){
-        CategoryDto category = categoryService.createCategory(categoryDto);
+    public ResponseEntity<CategoryResponseDto> createCategory (@RequestBody @Valid CategoryRequestDto categoryRequestDto){
+        CategoryResponseDto category = categoryService.createCategory(categoryRequestDto);
         return ResponseEntity.status(201).body(category);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories(){
-        List<CategoryDto> category = categoryService.listAllCategories();
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
+        List<CategoryResponseDto> category = categoryService.listAllCategories();
         return ResponseEntity.ok(category);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id){
-        CategoryDto category = categoryService.findCategoryById(id);
+    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id){
+        CategoryResponseDto category = categoryService.findCategoryById(id);
         return ResponseEntity.ok(category);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto){
-        CategoryDto category = categoryService.updateCategory(id, categoryDto);
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto categoryRequestDto){
+        CategoryResponseDto category = categoryService.updateCategory(id, categoryRequestDto);
         return ResponseEntity.ok(category);
     }
 
@@ -49,8 +50,8 @@ public class CategoryController {
     }
 
     @GetMapping("/by-name")
-    public ResponseEntity<CategoryDto> findByCategory(@RequestParam String name){
-        CategoryDto category = categoryService.findByCategory(name);
+    public ResponseEntity<CategoryResponseDto> findByCategory(@RequestParam String name){
+        CategoryResponseDto category = categoryService.findByCategory(name);
         return ResponseEntity.ok(category);
     }
 }

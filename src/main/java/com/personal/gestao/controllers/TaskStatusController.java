@@ -1,6 +1,7 @@
 package com.personal.gestao.controllers;
 
-import com.personal.gestao.dtos.TaskStatusDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.services.TaskStatusService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,27 +20,27 @@ public class TaskStatusController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskStatusDto> createStatus(@RequestBody @Valid TaskStatusDto taskStatusDto){
-        TaskStatusDto status = taskStatusService.createStatus(taskStatusDto);
+    public ResponseEntity<TaskStatusResponseDto> createStatus(@RequestBody @Valid TaskStatusRequestDto taskStatusRequestDto){
+        TaskStatusResponseDto status = taskStatusService.createStatus(taskStatusRequestDto);
         return ResponseEntity.status(201).body(status);
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskStatusDto>> listTaskStatus() {
-        List<TaskStatusDto> statusList = taskStatusService.listAllStatus();
+    public ResponseEntity<List<TaskStatusResponseDto>> listTaskStatus() {
+        List<TaskStatusResponseDto> statusList = taskStatusService.listAllStatus();
         return ResponseEntity.ok(statusList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskStatusDto> findStatusById(@PathVariable Long id) {
-        TaskStatusDto taskStatus = taskStatusService.findStatusById(id);
+    public ResponseEntity<TaskStatusResponseDto> findStatusById(@PathVariable Long id) {
+        TaskStatusResponseDto taskStatus = taskStatusService.findStatusById(id);
         return ResponseEntity.ok(taskStatus);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskStatusDto> updateTaskStatus(@PathVariable Long id,
-                                                             @RequestBody @Valid TaskStatusDto taskStatusDto) {
-        TaskStatusDto statusAtualizado = taskStatusService.updateStatus(id, taskStatusDto);
+    public ResponseEntity<TaskStatusResponseDto> updateTaskStatus(@PathVariable Long id,
+                                                                 @RequestBody @Valid TaskStatusRequestDto taskStatusRequestDto) {
+        TaskStatusResponseDto statusAtualizado = taskStatusService.updateStatus(id, taskStatusRequestDto);
         return ResponseEntity.ok(statusAtualizado);
     }
 
@@ -50,7 +51,7 @@ public class TaskStatusController {
     }
 
     @GetMapping("/by-status")
-    public ResponseEntity<TaskStatusDto> getByStatus(@RequestParam String status) {
+    public ResponseEntity<TaskStatusResponseDto> getByStatus(@RequestParam String status) {
         return ResponseEntity.ok(taskStatusService.findByStatus(status));
     }
 

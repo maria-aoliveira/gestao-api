@@ -1,24 +1,24 @@
 package com.personal.gestao.services;
 
-import com.personal.gestao.dtos.TaskDto;
-import com.personal.gestao.dtos.UserDto;
+import com.personal.gestao.dtos.user.UserRequestDto;
+import com.personal.gestao.dtos.user.UserResponseDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserDto createUser(UserDto user);
+    UserResponseDto createUser(UserRequestDto user);
 
-    List<UserDto> listAllUsers();
+    List<UserResponseDto> listAllUsers();
 
-    UserDto updateUser(Long id, UserDto user);
+    UserResponseDto updateUser(Long id, UserRequestDto user);
 
     void deleteUser(Long id);
 
-    UserDto findUserById(Long id);
+    UserResponseDto findUserById(Long id);
 
-    UserDto findByUsername(String username);
+    UserResponseDto findByUsername(String username);
 
-    UserDto findByName(String name);
+    UserResponseDto findByName(String name);
 
-    UserDto findByEmail(String email);
+    UserResponseDto findByEmail(String email);
 }

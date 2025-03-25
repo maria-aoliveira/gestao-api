@@ -1,6 +1,7 @@
 package com.personal.gestao.controllers;
 
-import com.personal.gestao.dtos.UserDto;
+import com.personal.gestao.dtos.user.UserRequestDto;
+import com.personal.gestao.dtos.user.UserResponseDto;
 import com.personal.gestao.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,44 +20,44 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
-        UserDto user = userService.createUser(userDto);
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto userRequestDto) {
+        UserResponseDto user = userService.createUser(userRequestDto);
         return ResponseEntity.status(201).body(user);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> listAllUsers() {
-        List<UserDto> users = userService.listAllUsers();
+    public ResponseEntity<List<UserResponseDto>> listAllUsers() {
+        List<UserResponseDto> users = userService.listAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findUserById(@PathVariable Long id) {
-        UserDto user = userService.findUserById(id);
+    public ResponseEntity<UserResponseDto> findUserById(@PathVariable Long id) {
+        UserResponseDto user = userService.findUserById(id);
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{by-username}")
-    public ResponseEntity<UserDto> findUserByUsername(@RequestParam String username) {
-        UserDto user = userService.findByUsername(username);
+    @GetMapping("/by-username")
+    public ResponseEntity<UserResponseDto> findUserByUsername(@RequestParam String username) {
+        UserResponseDto user = userService.findByUsername(username);
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{by-name}")
-    public ResponseEntity<UserDto> findUserByName(@RequestParam String name) {
-        UserDto user = userService.findByUsername(name);
+    @GetMapping("/by-name")
+    public ResponseEntity<UserResponseDto> findUserByName(@RequestParam String name) {
+        UserResponseDto user = userService.findByName(name);
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{by-email}")
-    public ResponseEntity<UserDto> findUserByEmail(@RequestParam String email) {
-        UserDto user = userService.findByUsername(email);
+    @GetMapping("/by-email")
+    public ResponseEntity<UserResponseDto> findUserByEmail(@RequestParam String email) {
+        UserResponseDto user = userService.findByEmail(email);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
-        UserDto updatedUser = userService.updateUser(id, userDto);
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequestDto userRequestDto) {
+        UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
         return ResponseEntity.ok(updatedUser);
     }
 

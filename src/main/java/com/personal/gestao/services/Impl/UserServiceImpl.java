@@ -1,18 +1,20 @@
 package com.personal.gestao.services.Impl;
 
-import com.personal.gestao.dtos.UserDto;
+import com.personal.gestao.dtos.user.UserRequestDto;
+import com.personal.gestao.dtos.user.UserResponseDto;
 import com.personal.gestao.entities.User;
 import com.personal.gestao.exceptions.ResourceNotFoundException;
+import com.personal.gestao.mappers.UserMapper;
 import com.personal.gestao.repositories.UserRepository;
 
 import com.personal.gestao.services.UserService;
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.personal.gestao.utils.validation.ValidationUtils.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,112 +27,90 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
-        validateCreateUpdate(userDto);
-        User user = userDto.toEntity();
+    @Transactional
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
+        validateCreate(userRequestDto);
+        User user = UserMapper.toEntity(userRequestDto);
         userRepository.save(user);
-        return UserDto.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public List<UserDto> listAllUsers() {
+    public List<UserResponseDto> listAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(UserDto::toUserDto)
+                .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
-        userDto.setId(id);
-        User user = getUserEntityById(id);
-        validateCreateUpdate(userDto);
+    @Transactional
+    public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) {
 
-        user.setUsername(userDto.getUsername());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
+        User user = getUserEntityById(id);
+        validateUpdate(userRequestDto, id);
+
+        user.setUsername(userRequestDto.getUsername());
+        user.setName(userRequestDto.getName());
+        user.setEmail(userRequestDto.getEmail());
 
         userRepository.save(user);
-        return UserDto.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         getUserEntityById(id);
         userRepository.deleteById(id);
     }
 
     @Override
-    public UserDto findUserById(Long id) {
-        return UserDto.toUserDto(getUserEntityById(id));
+    public UserResponseDto findUserById(Long id) {
+        return UserMapper.toUserDto(getUserEntityById(id));
     }
 
     @Override
-    public UserDto findByUsername(String username){
+    public UserResponseDto findByUsername(String username){
         User user = userRepository.findByUsername(username).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
-        return UserDto.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto findByName(String name){
+    public UserResponseDto findByName(String name){
         User user = userRepository.findByName(name).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
-        return UserDto.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto findByEmail(String email){
+    public UserResponseDto findByEmail(String email){
         User user = userRepository.findByEmail(email).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
-        return UserDto.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     private User getUserEntityById(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
-    private void validateUserData(UserDto userDto){
-        if (userDto.getUsername() == null || userDto.getUsername().isBlank()){
-            throw new IllegalArgumentException("Username is mandatory");
-        }
 
-        if (userDto.getName() == null || userDto.getName().isBlank()){
-            throw new IllegalArgumentException("Name is mandatory");
-        }
-
-        if (userDto.getEmail() == null || userDto.getEmail().isBlank()){
-            throw new IllegalArgumentException("E-mail is mandatory");
-        }
+    private void validateRequiredFields(UserRequestDto dto) {
+        validateRequiredField(dto.getUsername(), "Username");
+        validateRequiredField(dto.getName(), "Name");
+        validateRequiredField(dto.getEmail(), "Email");
     }
 
-    private void validateCreateUpdate(UserDto userDto){
-        validateUserData(userDto);
-        validateDuplicateEmail(userDto);
-        validateDuplicateName(userDto);
-        validateDuplicateUsername(userDto);
+    private void validateCreate(UserRequestDto userRequestDto) {
+        validateRequiredFields(userRequestDto);
+        validateDuplicateOnCreate(userRequestDto.getUsername(), "Username", userRepository::findByUsername);
+        validateDuplicateOnCreate(userRequestDto.getEmail(), "Email", userRepository::findByEmail);
     }
 
-    private void validateDuplicateUsername(UserDto userDto) {
-        checkDuplicateField(userDto.getUsername(), userDto.getId(), "Username", userRepository::findByUsername);
-    }
-
-    private void validateDuplicateName(UserDto userDto) {
-        checkDuplicateField(userDto.getName(), userDto.getId(), "Name", userRepository::findByName);
-    }
-
-    private void validateDuplicateEmail(UserDto userDto) {
-        checkDuplicateField(userDto.getEmail(), userDto.getId(), "Email", userRepository::findByEmail);
-    }
-
-    private void checkDuplicateField(String value, Long currentId, String fieldName,
-                                     Function<String, Optional<User>> finder) {
-        finder.apply(value).ifPresent(existingUser -> {
-            boolean isNew = currentId == null;
-            boolean isDifferent = !existingUser.getId().equals(currentId);
-            if (isNew || isDifferent) {
-                throw new DataIntegrityViolationException(fieldName + " already exists");
-            }
-        });
+    private void validateUpdate(UserRequestDto dto, Long id) {
+        validateRequiredFields(dto);
+        validateDuplicateOnUpdate(dto.getUsername(), id, "Username", userRepository::findByUsername, User::getId);
+        validateDuplicateOnUpdate(dto.getEmail(), id, "Email", userRepository::findByEmail, User::getId);
     }
 }

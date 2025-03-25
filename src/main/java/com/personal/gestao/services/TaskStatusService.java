@@ -1,19 +1,20 @@
 package com.personal.gestao.services;
 
-import com.personal.gestao.dtos.TaskStatusDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 
 import java.util.List;
 
 public interface TaskStatusService {
-    TaskStatusDto createStatus(TaskStatusDto taskStatusDto);
+    TaskStatusResponseDto createStatus(TaskStatusRequestDto taskStatusRequestDto);
 
-    List<TaskStatusDto> listAllStatus();
+    List<TaskStatusResponseDto> listAllStatus();
 
-    TaskStatusDto updateStatus(Long id, TaskStatusDto taskStatusDto);
+    TaskStatusResponseDto updateStatus(Long id, TaskStatusRequestDto taskStatusRequestDto);
 
     void deleteStatus(Long id);
 
-    TaskStatusDto findStatusById(Long id);
+    TaskStatusResponseDto findStatusById(Long id);
 
-    TaskStatusDto findByStatus(String status);
+    TaskStatusResponseDto findByStatus(String status);
 }

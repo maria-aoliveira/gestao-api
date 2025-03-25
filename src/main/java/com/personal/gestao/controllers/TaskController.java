@@ -1,6 +1,7 @@
 package com.personal.gestao.controllers;
 
-import com.personal.gestao.dtos.TaskDto;
+import com.personal.gestao.dtos.task.TaskRequestDto;
+import com.personal.gestao.dtos.task.TaskResponseDto;
 import com.personal.gestao.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,32 +19,32 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDto> createTask(@RequestBody @Valid TaskDto taskDTO) {
-        TaskDto task = taskService.createTask(taskDTO);
+    public ResponseEntity<TaskResponseDto> createTask(@RequestBody @Valid TaskRequestDto taskRequestDTO) {
+        TaskResponseDto task = taskService.createTask(taskRequestDTO);
         return ResponseEntity.status(201).body(task);
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDto>> listTasks() {
-        List<TaskDto> tasks = taskService.listAllTasks();
+    public ResponseEntity<List<TaskResponseDto>> listTasks() {
+        List<TaskResponseDto> tasks = taskService.listAllTasks();
         return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskDto> findByTaskId(@PathVariable Long id) {
-        TaskDto task = taskService.findTaskById(id);
+    public ResponseEntity<TaskResponseDto> findByTaskId(@PathVariable Long id) {
+        TaskResponseDto task = taskService.findTaskById(id);
         return ResponseEntity.ok(task);
     }
 
     @GetMapping("/by-title")
-    public ResponseEntity<TaskDto> findByTaskTitle(@RequestParam String title){
-        TaskDto task = taskService.findByTaskTitle(title);
+    public ResponseEntity<TaskResponseDto> findByTaskTitle(@RequestParam String title){
+        TaskResponseDto task = taskService.findByTaskTitle(title);
         return ResponseEntity.ok(task);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDto> updateTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDTO) {
-        TaskDto task = taskService.updateTask(id, taskDTO);
+    public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id, @RequestBody @Valid TaskRequestDto taskRequestDTO) {
+        TaskResponseDto task = taskService.updateTask(id, taskRequestDTO);
         return ResponseEntity.ok(task);
     }
 

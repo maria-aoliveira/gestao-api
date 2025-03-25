@@ -1,19 +1,20 @@
 package com.personal.gestao.services;
 
-import com.personal.gestao.dtos.TaskDto;
+import com.personal.gestao.dtos.task.TaskRequestDto;
+import com.personal.gestao.dtos.task.TaskResponseDto;
 
 import java.util.List;
 
 public interface TaskService {
-    TaskDto createTask(TaskDto taskDTO);
+    TaskResponseDto createTask(TaskRequestDto taskRequestDTO);
 
-    List<TaskDto> listAllTasks();
+    List<TaskResponseDto> listAllTasks();
 
-    TaskDto updateTask(Long id, TaskDto taskDTO);
+    TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDTO);
 
     void deleteTask(Long id);
 
-    TaskDto findTaskById(Long id);
+    TaskResponseDto findTaskById(Long id);
 
-    TaskDto findByTaskTitle(String name);
+    TaskResponseDto findByTaskTitle(String name);
 }

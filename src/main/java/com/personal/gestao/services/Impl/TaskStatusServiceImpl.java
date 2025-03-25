@@ -1,15 +1,20 @@
 package com.personal.gestao.services.Impl;
 
-import com.personal.gestao.dtos.TaskStatusDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
+import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.entities.TaskStatus;
 import com.personal.gestao.exceptions.ResourceNotFoundException;
+import com.personal.gestao.mappers.TaskStatusMapper;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.services.TaskStatusService;
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.personal.gestao.utils.validation.ValidationUtils.*;
 
 @Service
 public class TaskStatusServiceImpl implements TaskStatusService {
@@ -21,44 +26,47 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     }
 
     @Override
-    public TaskStatusDto createStatus (TaskStatusDto taskStatusDto) {
-        validateCreateUpdate(taskStatusDto);
-        TaskStatus taskStatus = taskStatusDto.toEntity();
+    @Transactional
+    public TaskStatusResponseDto createStatus (TaskStatusRequestDto taskStatusRequestDto) {
+        validateCreate(taskStatusRequestDto.getStatus());
+        TaskStatus taskStatus = TaskStatusMapper.toEntity(taskStatusRequestDto);
         taskStatus = taskStatusRepository.save(taskStatus);
-        return TaskStatusDto.toTaskStatusDto(taskStatus);
+        return TaskStatusMapper.toTaskStatusDto(taskStatus);
     }
 
     @Override
-    public List<TaskStatusDto> listAllStatus() {
+    public List<TaskStatusResponseDto> listAllStatus() {
         List<TaskStatus> taskStatuses = taskStatusRepository.findAll();
-        return taskStatuses.stream().map(TaskStatusDto::toTaskStatusDto).collect(Collectors.toList());
+        return taskStatuses.stream().map(TaskStatusMapper::toTaskStatusDto).collect(Collectors.toList());
     }
 
     @Override
-    public TaskStatusDto updateStatus(Long id, TaskStatusDto taskStatusDto) {
+    @Transactional
+    public TaskStatusResponseDto updateStatus(Long id, TaskStatusRequestDto taskStatusRequestDto) {
         TaskStatus taskStatus = getStatusEntityById(id);
-        validateCreateUpdate(taskStatusDto);
-        taskStatus.setStatus(taskStatusDto.getStatus());
+        validateUpdate(taskStatusRequestDto.getStatus(), id);
+        taskStatus.setStatus(taskStatusRequestDto.getStatus());
         taskStatus = taskStatusRepository.save(taskStatus);
-        return TaskStatusDto.toTaskStatusDto(taskStatus);
+        return TaskStatusMapper.toTaskStatusDto(taskStatus);
     }
 
     @Override
+    @Transactional
     public void deleteStatus(Long id) {
         this.findStatusById(id);
         taskStatusRepository.deleteById(id);
     }
 
     @Override
-    public TaskStatusDto findStatusById(Long id) {
-        return TaskStatusDto.toTaskStatusDto(getStatusEntityById(id));
+    public TaskStatusResponseDto findStatusById(Long id) {
+        return TaskStatusMapper.toTaskStatusDto(getStatusEntityById(id));
     }
 
     @Override
-    public TaskStatusDto findByStatus(String status){
+    public TaskStatusResponseDto findByStatus(String status){
         TaskStatus taskStatus = taskStatusRepository.findByStatus(status).orElseThrow(() ->
                 new ResourceNotFoundException("Status '" + status + "'not found"));
-        return TaskStatusDto.toTaskStatusDto(taskStatus);
+        return TaskStatusMapper.toTaskStatusDto(taskStatus);
     }
 
     public TaskStatus getStatusEntityById(Long id){
@@ -66,22 +74,15 @@ public class TaskStatusServiceImpl implements TaskStatusService {
                 new ResourceNotFoundException("Status not found"));
     }
 
-    public void validateStatus(String status){
-        if(status == null || status.isBlank()){
-            throw new IllegalArgumentException("Status is mandatory");
-        }
+    public void validateCreate(String status){
+        validateRequiredField(status, "Task status");
+        validateDuplicateOnCreate(status,"Task status",
+                taskStatusRepository::findByStatus);
     }
 
-    public void validateCreateUpdate(TaskStatusDto taskStatusDto){
-        validateStatus(taskStatusDto.getStatus());
-
-        taskStatusRepository.findByStatus(taskStatusDto.getStatus()).ifPresent(existingStatus -> {
-            boolean isNew = taskStatusDto.getStatus() == null;
-            boolean isDifferent = !existingStatus.getId().equals(taskStatusDto.getStatus());
-
-            if(isNew || isDifferent){
-                throw new DataIntegrityViolationException("Status already existis");
-            }
-        });
+    private void validateUpdate(String status, Long id){
+        validateRequiredField(status, "Task status");
+        validateDuplicateOnUpdate(status, id, "Task",
+                taskStatusRepository::findByStatus, TaskStatus::getId);
     }
 }

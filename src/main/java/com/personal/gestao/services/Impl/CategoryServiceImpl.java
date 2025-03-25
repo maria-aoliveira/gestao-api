@@ -1,16 +1,20 @@
 package com.personal.gestao.services.Impl;
 
-import com.personal.gestao.dtos.CategoryDto;
+import com.personal.gestao.dtos.category.CategoryRequestDto;
+import com.personal.gestao.dtos.category.CategoryResponseDto;
 import com.personal.gestao.entities.Category;
 import com.personal.gestao.exceptions.ResourceNotFoundException;
+import com.personal.gestao.mappers.CategoryMapper;
 import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.services.CategoryService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.personal.gestao.utils.validation.ValidationUtils.*;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -19,66 +23,63 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public CategoryDto createCategory(CategoryDto categoryDto) {
-        validateCreateUpdate(categoryDto);
-        Category category = categoryDto.toEntity();
+    @Transactional
+    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
+        validateCreate(categoryRequestDto.getName());
+        Category category = CategoryMapper.toEntity(categoryRequestDto);
         category = categoryRepository.save(category);
-        return CategoryDto.toCategoryDto(category);
+        return CategoryMapper.toCategoryDto(category);
     }
 
     @Override
-    public List<CategoryDto> listAllCategories() {
-        return categoryRepository.findAll().stream().map(CategoryDto::toCategoryDto).collect(Collectors.toList());
+    public List<CategoryResponseDto> listAllCategories() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(CategoryMapper::toCategoryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
+    @Transactional
+    public CategoryResponseDto updateCategory(Long id, CategoryRequestDto categoryRequestDto) {
         Category category = getCategoryEntityById(id);
-        validateCreateUpdate(categoryDto);
-        category.setName(categoryDto.getName());
+        validateUpdate(categoryRequestDto.getName(), id);
+        category.setName(categoryRequestDto.getName());
         categoryRepository.save(category);
-        return CategoryDto.toCategoryDto(category);
+        return CategoryMapper.toCategoryDto(category);
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long id) {
         getCategoryEntityById(id);
         categoryRepository.deleteById(id);
     }
 
     @Override
-    public CategoryDto findByCategory(String name){
+    public CategoryResponseDto findByCategory(String name){
         Category category = categoryRepository.findByName(name).orElseThrow(() ->
                 new ResourceNotFoundException("Category '" + name + "'not found"));
-        return CategoryDto.toCategoryDto(category);
+        return CategoryMapper.toCategoryDto(category);
     }
 
     @Override
-    public CategoryDto findCategoryById(Long id) {
-        return CategoryDto.toCategoryDto(getCategoryEntityById(id));
+    public CategoryResponseDto findCategoryById(Long id) {
+        return CategoryMapper.toCategoryDto(getCategoryEntityById(id));
     }
-
 
     private Category getCategoryEntityById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
 
-    private void validateCategoryName(String name){
-        if (name == null || name.isBlank()){
-            throw new IllegalArgumentException("Category name is mandatory");
-        }
+    private void validateCreate(String name){
+        validateRequiredField(name, "Category name");
+        validateDuplicateOnCreate(name, "Category", categoryRepository::findByName);
     }
 
-    private void validateCreateUpdate(CategoryDto categoryDto){
-        validateCategoryName(categoryDto.getName());
-        categoryRepository.findByName(categoryDto.getName()).ifPresent(existingCategory -> {
-            boolean isNew = categoryDto.getId() == null;
-            boolean isDifferent = !existingCategory.getId().equals(categoryDto.getId());
-
-            if (isNew || isDifferent) {
-                throw new DataIntegrityViolationException("Category already exists");
-            }
-        });
+    private void validateUpdate(String name, Long id){
+        validateRequiredField(name,"Category name");
+        validateDuplicateOnUpdate(name, id, "Category", categoryRepository::findByName, Category::getId);
     }
 }

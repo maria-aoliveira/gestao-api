@@ -1,4 +1,4 @@
-package com.personal.gestao.dtos;
+package com.personal.gestao.dtos.user;
 
 import com.personal.gestao.entities.User;
 import jakarta.validation.constraints.Email;
@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    private Long id;
+public class UserRequestDto {
 
     @NotBlank(message = "Username is mandatory")
     @Size(max = 50, message = "Username cannot have more than 50 characters")
@@ -27,20 +26,4 @@ public class UserDto {
     @NotBlank(message = "E-mail is mandatory")
     private String email;
 
-    public static UserDto toUserDto(User user){
-        return new UserDto(
-                user.getId(),
-                user.getUsername(),
-                user.getName(),
-                user.getEmail()
-        );
-    }
-
-    public User toEntity(){
-        User user = new User();
-        user.setUsername(this.username);
-        user.setName(this.name);
-        user.setEmail(this.email);
-        return user;
-    }
 }

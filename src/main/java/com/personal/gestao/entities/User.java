@@ -3,6 +3,7 @@ package com.personal.gestao.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
@@ -12,8 +13,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +26,6 @@ public class User {
     private String name;
 
     private String email;
-
-    private Timestamp createdAt;
-
-    private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;

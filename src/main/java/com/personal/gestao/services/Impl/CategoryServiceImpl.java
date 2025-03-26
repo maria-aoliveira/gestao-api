@@ -1,5 +1,6 @@
 package com.personal.gestao.services.Impl;
 
+import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
 import com.personal.gestao.dtos.category.CategoryResponseDto;
 import com.personal.gestao.entities.Category;
@@ -9,6 +10,8 @@ import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.services.CategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,17 +29,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
         validateCreate(categoryRequestDto.getName());
-        Category category = CategoryMapper.toEntity(categoryRequestDto);
+        Category category = CategoryMapper.toCategoryEntity(categoryRequestDto);
         category = categoryRepository.save(category);
         return CategoryMapper.toCategoryDto(category);
     }
 
     @Override
-    public List<CategoryResponseDto> listAllCategories() {
-        return categoryRepository.findAll()
-                .stream()
-                .map(CategoryMapper::toCategoryDto)
-                .collect(Collectors.toList());
+    public CategoryPageResponseDto listAllCategories(Pageable pageable) {
+        Page<Category> category = categoryRepository.findAll(pageable);
+        return CategoryPageResponseDto.fromPage(category);
     }
 
     @Override

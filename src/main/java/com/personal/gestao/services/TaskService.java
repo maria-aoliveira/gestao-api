@@ -1,14 +1,16 @@
 package com.personal.gestao.services;
 
+import com.personal.gestao.dtos.task.TaskPageResponseDto;
 import com.personal.gestao.dtos.task.TaskRequestDto;
 import com.personal.gestao.dtos.task.TaskResponseDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface TaskService {
     TaskResponseDto createTask(TaskRequestDto taskRequestDTO);
 
-    List<TaskResponseDto> listAllTasks();
+    TaskPageResponseDto listAllTasks(Pageable pageable);
 
     TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDTO);
 

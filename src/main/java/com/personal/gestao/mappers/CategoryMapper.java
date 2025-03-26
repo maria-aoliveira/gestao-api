@@ -13,7 +13,7 @@ public class CategoryMapper {
         );
     }
 
-    public static Category toEntity(CategoryRequestDto categoryDto) {
+    public static Category toCategoryEntity(CategoryRequestDto categoryDto) {
         Category category = new Category();
         category.setName(categoryDto.getName());
         return category;

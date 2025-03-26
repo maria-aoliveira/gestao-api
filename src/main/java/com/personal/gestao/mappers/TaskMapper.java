@@ -23,7 +23,7 @@ public class TaskMapper {
         );
     }
 
-    public static Task toEntity(TaskRequestDto taskRequestDto, User user, Category category, TaskStatus taskStatus) {
+    public static Task toTaskEntity(TaskRequestDto taskRequestDto, User user, Category category, TaskStatus taskStatus) {
         Task task = new Task();
         task.setTitle(taskRequestDto.getTitle());
         task.setDescription(taskRequestDto.getDescription());

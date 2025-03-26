@@ -1,14 +1,15 @@
 package com.personal.gestao.services;
 
+import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
 import com.personal.gestao.dtos.category.CategoryResponseDto;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface CategoryService {
     CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto);
 
-    List<CategoryResponseDto> listAllCategories();
+    CategoryPageResponseDto listAllCategories(Pageable pageable);
 
     CategoryResponseDto updateCategory(Long id, CategoryRequestDto categoryRequestDto);
 

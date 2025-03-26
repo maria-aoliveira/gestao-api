@@ -1,5 +1,6 @@
 package com.personal.gestao.services.Impl;
 
+import com.personal.gestao.dtos.user.UserPageResponseDto;
 import com.personal.gestao.dtos.user.UserRequestDto;
 import com.personal.gestao.dtos.user.UserResponseDto;
 import com.personal.gestao.entities.User;
@@ -9,6 +10,8 @@ import com.personal.gestao.repositories.UserRepository;
 
 import com.personal.gestao.services.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,17 +33,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
         validateCreate(userRequestDto);
-        User user = UserMapper.toEntity(userRequestDto);
+        User user = UserMapper.toUserEntity(userRequestDto);
         userRepository.save(user);
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public List<UserResponseDto> listAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+    public UserPageResponseDto listAllUsers(Pageable pageable) {
+        Page<User> user = userRepository.findAll(pageable);
+        return UserPageResponseDto.fromPage(user);
     }
 
     @Override

@@ -1,9 +1,13 @@
 package com.personal.gestao.controllers;
 
+import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.services.TaskStatusService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +30,17 @@ public class TaskStatusController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskStatusResponseDto>> listTaskStatus() {
-        List<TaskStatusResponseDto> statusList = taskStatusService.listAllStatus();
+    public ResponseEntity<TaskStatusPageResponseDto> listTaskStatus(@RequestParam(defaultValue = "0") int page,
+                                                                    @RequestParam(defaultValue = "10") int size,
+                                                                    @RequestParam(defaultValue = "id") String sort,
+                                                                    @RequestParam(defaultValue = "asc") String direction) {
+
+        Sort sortOrder = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sort).descending()
+                : Sort.by(sort).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        TaskStatusPageResponseDto statusList = taskStatusService.listAllStatus(pageable);
         return ResponseEntity.ok(statusList);
     }
 

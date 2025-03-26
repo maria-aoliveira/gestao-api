@@ -3,7 +3,7 @@ package com.personal.gestao.dtos.task;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskResponseDto {

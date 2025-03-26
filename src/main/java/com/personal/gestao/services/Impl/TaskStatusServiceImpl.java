@@ -1,5 +1,6 @@
 package com.personal.gestao.services.Impl;
 
+import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.entities.TaskStatus;
@@ -9,6 +10,8 @@ import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.services.TaskStatusService;
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,15 +32,15 @@ public class TaskStatusServiceImpl implements TaskStatusService {
     @Transactional
     public TaskStatusResponseDto createStatus (TaskStatusRequestDto taskStatusRequestDto) {
         validateCreate(taskStatusRequestDto.getStatus());
-        TaskStatus taskStatus = TaskStatusMapper.toEntity(taskStatusRequestDto);
+        TaskStatus taskStatus = TaskStatusMapper.toTaskStatusEntity(taskStatusRequestDto);
         taskStatus = taskStatusRepository.save(taskStatus);
         return TaskStatusMapper.toTaskStatusDto(taskStatus);
     }
 
     @Override
-    public List<TaskStatusResponseDto> listAllStatus() {
-        List<TaskStatus> taskStatuses = taskStatusRepository.findAll();
-        return taskStatuses.stream().map(TaskStatusMapper::toTaskStatusDto).collect(Collectors.toList());
+    public TaskStatusPageResponseDto listAllStatus(Pageable pageable) {
+        Page<TaskStatus> taskStatus = taskStatusRepository.findAll(pageable);
+        return TaskStatusPageResponseDto.fromPage(taskStatus) ;
     }
 
     @Override

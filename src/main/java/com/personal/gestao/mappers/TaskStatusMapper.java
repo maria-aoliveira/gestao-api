@@ -1,6 +1,5 @@
 package com.personal.gestao.mappers;
 
-import com.personal.gestao.dtos.task.TaskRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.entities.TaskStatus;
@@ -14,7 +13,7 @@ public class TaskStatusMapper {
         );
     }
 
-    public static TaskStatus toEntity(TaskStatusRequestDto taskStatusRequestDto){
+    public static TaskStatus toTaskStatusEntity(TaskStatusRequestDto taskStatusRequestDto){
         TaskStatus taskStatus = new TaskStatus();
         taskStatus.setStatus(taskStatusRequestDto.getStatus());
         return taskStatus;

@@ -1,9 +1,13 @@
 package com.personal.gestao.controllers;
 
+import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
 import com.personal.gestao.dtos.category.CategoryResponseDto;
 import com.personal.gestao.services.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +30,20 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
-        List<CategoryResponseDto> category = categoryService.listAllCategories();
-        return ResponseEntity.ok(category);
-    }
+    public ResponseEntity<CategoryPageResponseDto> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
 
+        Sort sortOrder = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sort).descending()
+                : Sort.by(sort).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        CategoryPageResponseDto response = categoryService.listAllCategories(pageable);
+        return ResponseEntity.ok(response);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id){
         CategoryResponseDto category = categoryService.findCategoryById(id);
@@ -50,7 +63,7 @@ public class CategoryController {
     }
 
     @GetMapping("/by-name")
-    public ResponseEntity<CategoryResponseDto> findByCategory(@RequestParam String name){
+    public ResponseEntity<CategoryResponseDto> findByCategoryName(@RequestParam String name){
         CategoryResponseDto category = categoryService.findByCategory(name);
         return ResponseEntity.ok(category);
     }

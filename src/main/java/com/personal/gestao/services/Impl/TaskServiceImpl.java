@@ -1,5 +1,6 @@
 package com.personal.gestao.services.Impl;
 
+import com.personal.gestao.dtos.task.TaskPageResponseDto;
 import com.personal.gestao.dtos.task.TaskRequestDto;
 import com.personal.gestao.dtos.task.TaskResponseDto;
 import com.personal.gestao.entities.Category;
@@ -14,6 +15,8 @@ import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.repositories.UserRepository;
 import com.personal.gestao.services.TaskService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
         Category category = findCategoryIfPresent(taskRequestDTO.getCategoryId());
         TaskStatus taskStatus = findOrDefaultStatus(taskRequestDTO.getTaskStatusId());
 
-        Task task = TaskMapper.toEntity(taskRequestDTO, user, category, taskStatus);
+        Task task = TaskMapper.toTaskEntity(taskRequestDTO, user, category, taskStatus);
 
         task = taskRepository.save(task);
 
@@ -55,11 +58,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDto> listAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
-        return tasks.stream()
-                .map(TaskMapper::toTaskDto)
-                .collect(Collectors.toList());
+    public TaskPageResponseDto listAllTasks(Pageable pageable) {
+        Page<Task> tasks = taskRepository.findAll(pageable);
+        return TaskPageResponseDto.fromPage(tasks);
     }
 
     @Override

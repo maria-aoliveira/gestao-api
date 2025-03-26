@@ -18,7 +18,7 @@ public class UserMapper {
         );
     }
 
-    public static User toEntity(UserRequestDto userRequestDto){
+    public static User toUserEntity(UserRequestDto userRequestDto){
         User user = new User();
         user.setUsername(userRequestDto.getUsername());
         user.setName(userRequestDto.getName());

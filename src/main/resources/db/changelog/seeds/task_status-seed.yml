@@ -11,16 +11,16 @@ databaseChangeLog:
             columns:
               - column:
                   name: status
-                  value: New
+                  value: Novo
         - insert:
             tableName: task_status
             columns:
               - column:
                   name: status
-                  value: In Progress
+                  value: Em progresso
         - insert:
             tableName: task_status
             columns:
               - column:
                   name: status
-                  value: Completed
+                  value: Finalizado

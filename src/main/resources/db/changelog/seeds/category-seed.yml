@@ -19,5 +19,12 @@ databaseChangeLog:
               - column:
                   name: name
                   value: Pessoal
+        - insert:
+            tableName: category
+            columns:
+              - column:
+                  name: name
+                  value: Geral
+
 
 

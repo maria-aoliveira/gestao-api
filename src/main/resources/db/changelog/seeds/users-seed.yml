@@ -22,3 +22,6 @@ databaseChangeLog:
               - column:
                   name: email
                   value: admin@email.com
+              - column:
+                  name: deactivated_at
+                  value: null

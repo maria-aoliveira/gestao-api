@@ -20,8 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.personal.gestao.utils.validation.ValidationUtils.*;
 
@@ -47,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
         validateCreate(taskRequestDTO.getTitle(), taskRequestDTO.getDueDate());
 
         User user = findUserById(taskRequestDTO.getUserId());
-        Category category = findCategoryIfPresent(taskRequestDTO.getCategoryId());
+        Category category = findOrDefaultCategory(taskRequestDTO.getCategoryId());
         TaskStatus taskStatus = findOrDefaultStatus(taskRequestDTO.getTaskStatusId());
 
         Task task = TaskMapper.toTaskEntity(taskRequestDTO, user, category, taskStatus);
@@ -59,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskPageResponseDto listAllTasks(Pageable pageable) {
-        Page<Task> tasks = taskRepository.findAll(pageable);
+        Page<Task> tasks = taskRepository.findAllActive(pageable);
         return TaskPageResponseDto.fromPage(tasks);
     }
 
@@ -83,8 +81,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void deleteTask(Long id) {
-        getTaskEntityById(id);
-        taskRepository.deleteById(id);
+        Task task = getTaskEntityById(id);
+        task.setDeletedAt(LocalDateTime.now());
+        taskRepository.save(task);
     }
 
     @Override
@@ -94,13 +93,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponseDto findByTaskTitle(String title){
-        Task task = taskRepository.findByTitle(title)
+        Task task = taskRepository.findActiveByTitle(title)
                 .orElseThrow(()-> new ResourceNotFoundException("Task not found"));
         return TaskMapper.toTaskDto(task);
     }
 
     public Task getTaskEntityById(Long id){
-        return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+        return taskRepository.findActiveById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
     private User findUserById(Long id){
@@ -108,9 +107,12 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    private Category findCategoryIfPresent(Long categoryId) {
-        if (categoryId == null) return null;
-        return categoryRepository.findById(categoryId)
+    private Category findOrDefaultCategory(Long categoryId) {
+        if (categoryId != null) {
+            return categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        }
+        return categoryRepository.findByName("Geral")
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
 
@@ -119,7 +121,7 @@ public class TaskServiceImpl implements TaskService {
             return taskStatusRepository.findById(statusId)
                     .orElseThrow(() -> new ResourceNotFoundException("TaskStatus not found"));
         }
-        return taskStatusRepository.findByStatus("New")
+        return taskStatusRepository.findByStatus("Novo")
                 .orElseThrow(() -> new ResourceNotFoundException("Default TaskStatus not found"));
     }
 
@@ -133,13 +135,13 @@ public class TaskServiceImpl implements TaskService {
         validateDueDate(date);
         validateRequiredField(name, "Task title");
         validateDuplicateOnCreate(name,"Task",
-                taskRepository::findByTitle);
+                taskRepository::findActiveByTitle);
     }
 
     private void validateUpdate(String name, Long id, LocalDateTime date){
         validateDueDate(date);
         validateRequiredField(name, "Task title");
         validateDuplicateOnUpdate(name, id, "Task",
-                taskRepository::findByTitle, Task::getId);
+                taskRepository::findActiveByTitle, Task::getId);
     }
 }

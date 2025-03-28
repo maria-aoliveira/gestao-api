@@ -25,3 +25,7 @@ databaseChangeLog:
               - column:
                   name: task_status_id
                   valueNumeric: 1
+              - column:
+                  name: deleted_at
+                  value: null
+

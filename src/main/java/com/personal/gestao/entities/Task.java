@@ -38,4 +38,7 @@ public class Task extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "task_status_id")
     private TaskStatus taskStatus;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

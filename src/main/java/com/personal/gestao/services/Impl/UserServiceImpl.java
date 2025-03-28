@@ -14,8 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 import static com.personal.gestao.utils.validation.ValidationUtils.*;
 
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserPageResponseDto listAllUsers(Pageable pageable) {
-        Page<User> user = userRepository.findAll(pageable);
+        Page<User> user = userRepository.findAllActive(pageable);
         return UserPageResponseDto.fromPage(user);
     }
 
@@ -62,8 +61,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        getUserEntityById(id);
-        userRepository.deleteById(id);
+        User user = getUserEntityById(id);
+        user.setDeactivatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 
     @Override
@@ -73,27 +73,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto findByUsername(String username){
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findActiveByUsername(username).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserResponseDto findByName(String name){
-        User user = userRepository.findByName(name).orElseThrow(
+        User user = userRepository.findActiveByName(name).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserResponseDto findByEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(
+        User user = userRepository.findActiveByEmail(email).orElseThrow(
                 () ->  new ResourceNotFoundException("User not found"));
         return UserMapper.toUserDto(user);
     }
 
     private User getUserEntityById(Long id){
-        return userRepository.findById(id)
+        return userRepository.findActiveById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
@@ -105,13 +105,13 @@ public class UserServiceImpl implements UserService {
 
     private void validateCreate(UserRequestDto userRequestDto) {
         validateRequiredFields(userRequestDto);
-        validateDuplicateOnCreate(userRequestDto.getUsername(), "Username", userRepository::findByUsername);
-        validateDuplicateOnCreate(userRequestDto.getEmail(), "Email", userRepository::findByEmail);
+        validateDuplicateOnCreate(userRequestDto.getUsername(), "Username", userRepository::findActiveByUsername);
+        validateDuplicateOnCreate(userRequestDto.getEmail(), "Email", userRepository::findActiveByEmail);
     }
 
     private void validateUpdate(UserRequestDto dto, Long id) {
         validateRequiredFields(dto);
-        validateDuplicateOnUpdate(dto.getUsername(), id, "Username", userRepository::findByUsername, User::getId);
-        validateDuplicateOnUpdate(dto.getEmail(), id, "Email", userRepository::findByEmail, User::getId);
+        validateDuplicateOnUpdate(dto.getUsername(), id, "Username", userRepository::findActiveByUsername, User::getId);
+        validateDuplicateOnUpdate(dto.getEmail(), id, "Email", userRepository::findActiveByEmail, User::getId);
     }
 }

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -29,4 +30,7 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;
+
+    @Column(name = "deactivated_at")
+    private LocalDateTime deactivatedAt;
 }

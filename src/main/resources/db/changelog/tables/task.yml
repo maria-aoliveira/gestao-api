@@ -46,6 +46,9 @@ databaseChangeLog:
                   name: updated_at
                   type: TIMESTAMP
                   defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP
               - foreignKeyConstraint:
                   baseColumnNames: user_id
                   baseTableName: task

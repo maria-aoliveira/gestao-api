@@ -12,14 +12,11 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-//    @Value("${SPRING_APP_JWT_SECRET}")
-//    private String jwtSecret;
-//
-//    @Value("${SPRING_APP_JWT_EXPIRATION}")
-//    private long jwtExpirationMs;
+    @Value("${SPRING_APP_JWT_SECRET}")
+    private String jwtSecret;
 
-    private final String jwtSecret = "sua-chave-secreta-supersecreta";
-    private final long jwtExpirationMs = 86400000;
+    @Value("${SPRING_APP_JWT_EXPIRATION}")
+    private long jwtExpirationMs;
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()

@@ -1,4 +1,4 @@
-package com.personal.gestao.services.Impl;
+package com.personal.gestao.services.category;
 
 import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
@@ -7,15 +7,11 @@ import com.personal.gestao.entities.Category;
 import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.mappers.CategoryMapper;
 import com.personal.gestao.repositories.CategoryRepository;
-import com.personal.gestao.services.CategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.personal.gestao.utils.validation.ValidationUtils.*;
 

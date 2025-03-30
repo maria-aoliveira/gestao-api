@@ -3,7 +3,7 @@ package com.personal.gestao.controllers;
 import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
 import com.personal.gestao.dtos.category.CategoryResponseDto;
-import com.personal.gestao.services.CategoryService;
+import com.personal.gestao.services.category.CategoryService;
 import com.personal.gestao.swagger.CategoryApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/categories")

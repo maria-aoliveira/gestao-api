@@ -1,4 +1,4 @@
-package com.personal.gestao.services.Impl;
+package com.personal.gestao.services.task;
 
 import com.personal.gestao.dtos.task.TaskPageResponseDto;
 import com.personal.gestao.dtos.task.TaskRequestDto;
@@ -13,7 +13,6 @@ import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.repositories.TaskRepository;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.repositories.UserRepository;
-import com.personal.gestao.services.TaskService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

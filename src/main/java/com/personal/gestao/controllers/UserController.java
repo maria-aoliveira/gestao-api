@@ -1,9 +1,7 @@
 package com.personal.gestao.controllers;
 
-import com.personal.gestao.dtos.user.UserPageResponseDto;
-import com.personal.gestao.dtos.user.UserRequestDto;
-import com.personal.gestao.dtos.user.UserResponseDto;
-import com.personal.gestao.services.UserService;
+import com.personal.gestao.dtos.user.*;
+import com.personal.gestao.services.user.UserService;
 import com.personal.gestao.swagger.UserApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -72,8 +68,8 @@ public class UserController implements UserApiDocumentation {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequestDto userRequestDto) {
-        UserResponseDto updatedUser = userService.updateUser(id, userRequestDto);
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserRequestDto updateUserRequestDto) {
+        UserResponseDto updatedUser = userService.updateUser(id, updateUserRequestDto);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -82,4 +78,12 @@ public class UserController implements UserApiDocumentation {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id,
+                                               @RequestBody @Valid UpdatePasswordRequestDto dto) {
+        userService.updatePassword(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
 }

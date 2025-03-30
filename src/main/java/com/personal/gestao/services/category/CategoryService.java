@@ -1,4 +1,4 @@
-package com.personal.gestao.services;
+package com.personal.gestao.services.category;
 
 import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;

@@ -1,4 +1,4 @@
-package com.personal.gestao.services.Impl;
+package com.personal.gestao.services.taskstatus;
 
 import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
@@ -7,15 +7,11 @@ import com.personal.gestao.entities.TaskStatus;
 import com.personal.gestao.exceptions.ResourceNotFoundException;
 import com.personal.gestao.mappers.TaskStatusMapper;
 import com.personal.gestao.repositories.TaskStatusRepository;
-import com.personal.gestao.services.TaskStatusService;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.personal.gestao.utils.validation.ValidationUtils.*;
 

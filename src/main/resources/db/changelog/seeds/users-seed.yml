@@ -18,7 +18,7 @@ databaseChangeLog:
                   value: Administrador
               - column:
                   name: password
-                  value: admin123
+                  value: $2a$12$OFFRbHraF/aOUDZD0K2SFOLWTMcpfykj7iBTLYUeQOma7ym3ohgaG
               - column:
                   name: email
                   value: admin@email.com

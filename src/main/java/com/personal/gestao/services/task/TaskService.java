@@ -1,4 +1,4 @@
-package com.personal.gestao.services;
+package com.personal.gestao.services.task;
 
 import com.personal.gestao.dtos.task.TaskPageResponseDto;
 import com.personal.gestao.dtos.task.TaskRequestDto;

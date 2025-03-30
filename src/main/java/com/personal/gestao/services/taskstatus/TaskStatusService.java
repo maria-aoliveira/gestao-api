@@ -1,11 +1,9 @@
-package com.personal.gestao.services;
+package com.personal.gestao.services.taskstatus;
 
 import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface TaskStatusService {
     TaskStatusResponseDto createStatus(TaskStatusRequestDto taskStatusRequestDto);

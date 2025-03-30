@@ -3,7 +3,7 @@ package com.personal.gestao.controllers;
 import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
-import com.personal.gestao.services.TaskStatusService;
+import com.personal.gestao.services.taskstatus.TaskStatusService;
 import com.personal.gestao.swagger.TaskStatusApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/status")

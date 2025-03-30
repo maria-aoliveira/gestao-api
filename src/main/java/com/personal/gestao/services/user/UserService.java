@@ -1,18 +1,16 @@
-package com.personal.gestao.services;
+package com.personal.gestao.services.user;
 
-import com.personal.gestao.dtos.user.UserPageResponseDto;
-import com.personal.gestao.dtos.user.UserRequestDto;
-import com.personal.gestao.dtos.user.UserResponseDto;
+import com.personal.gestao.dtos.user.*;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface UserService {
     UserResponseDto createUser(UserRequestDto user);
 
     UserPageResponseDto listAllUsers(Pageable pageable);
 
-    UserResponseDto updateUser(Long id, UserRequestDto user);
+    UserResponseDto updateUser(Long id, UpdateUserRequestDto updateUserRequestDto);
+
+    void updatePassword(Long id, UpdatePasswordRequestDto updatePasswordRequestDto);
 
     void deleteUser(Long id);
 

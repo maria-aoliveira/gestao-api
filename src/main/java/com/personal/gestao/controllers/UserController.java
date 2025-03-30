@@ -4,6 +4,7 @@ import com.personal.gestao.dtos.user.UserPageResponseDto;
 import com.personal.gestao.dtos.user.UserRequestDto;
 import com.personal.gestao.dtos.user.UserResponseDto;
 import com.personal.gestao.services.UserService;
+import com.personal.gestao.swagger.UserApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UserApiDocumentation {
 
     private final UserService userService;
 

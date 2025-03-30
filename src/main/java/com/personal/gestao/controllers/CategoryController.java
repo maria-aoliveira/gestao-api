@@ -4,6 +4,7 @@ import com.personal.gestao.dtos.category.CategoryPageResponseDto;
 import com.personal.gestao.dtos.category.CategoryRequestDto;
 import com.personal.gestao.dtos.category.CategoryResponseDto;
 import com.personal.gestao.services.CategoryService;
+import com.personal.gestao.swagger.CategoryApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-public class CategoryController {
+public class CategoryController implements CategoryApiDocumentation {
 
     private final CategoryService categoryService;
 

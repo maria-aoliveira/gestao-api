@@ -4,6 +4,7 @@ import com.personal.gestao.dtos.task.TaskPageResponseDto;
 import com.personal.gestao.dtos.task.TaskRequestDto;
 import com.personal.gestao.dtos.task.TaskResponseDto;
 import com.personal.gestao.services.TaskService;
+import com.personal.gestao.swagger.TaskApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskController {
+public class TaskController implements TaskApiDocumentation {
 
     private final TaskService taskService;
 

@@ -4,6 +4,7 @@ import com.personal.gestao.dtos.taskstatus.TaskStatusPageResponseDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusRequestDto;
 import com.personal.gestao.dtos.taskstatus.TaskStatusResponseDto;
 import com.personal.gestao.services.TaskStatusService;
+import com.personal.gestao.swagger.TaskStatusApiDocumentation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/status")
-public class TaskStatusController {
+public class TaskStatusController implements TaskStatusApiDocumentation {
 
     private final TaskStatusService taskStatusService;
 

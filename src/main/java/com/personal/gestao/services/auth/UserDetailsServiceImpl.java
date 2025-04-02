@@ -1,10 +1,14 @@
 package com.personal.gestao.services.auth;
 
+import com.personal.gestao.config.security.AuthenticatedUser;
+import com.personal.gestao.entities.User;
 import com.personal.gestao.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -17,7 +21,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new AuthenticatedUser(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
+                List.of() //todo roles
+        );
     }
 }

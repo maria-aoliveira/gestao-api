@@ -1,5 +1,6 @@
 package com.personal.gestao.services.auth;
 
+import com.personal.gestao.config.security.AuthenticatedUser;
 import com.personal.gestao.config.security.JWTUtils;
 import com.personal.gestao.dtos.auth.AuthRequestDto;
 import com.personal.gestao.entities.User;
@@ -31,8 +32,8 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
 
-            User user = (User) auth.getPrincipal();
-            return jwtUtils.generateToken(user);
+            AuthenticatedUser user = (AuthenticatedUser) auth.getPrincipal();
+            return jwtUtils.generateToken(user.getId(), user.getUsername());
 
         } catch (Exception e) {
             System.out.println("Error while authenticating: " + e.getMessage());

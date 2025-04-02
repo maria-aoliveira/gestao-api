@@ -25,9 +25,6 @@ public class TaskRequestDto {
     @Size(max = 1000, message = "Description cannot have more than 255 characters")
     private String description;
 
-    @NotNull(message = "User is mandatory")
-    private Long userId;
-
     private Long categoryId;
 
     private Long taskStatusId;

@@ -13,9 +13,11 @@ import com.personal.gestao.repositories.CategoryRepository;
 import com.personal.gestao.repositories.TaskRepository;
 import com.personal.gestao.repositories.TaskStatusRepository;
 import com.personal.gestao.repositories.UserRepository;
+import com.personal.gestao.services.context.CurrentUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,25 +27,29 @@ import static com.personal.gestao.utils.validation.ValidationUtils.*;
 @Service
 public class TaskServiceImpl implements TaskService {
 
+    private final CurrentUserService currentUserService;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TaskStatusRepository taskStatusRepository;
 
     public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository,
-                           CategoryRepository categoryRepository, TaskStatusRepository taskStatusRepository) {
+                           CategoryRepository categoryRepository, TaskStatusRepository taskStatusRepository,
+                           CurrentUserService currentUserService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.taskStatusRepository = taskStatusRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Override
     @Transactional
     public TaskResponseDto createTask(TaskRequestDto taskRequestDTO) {
-        validateCreate(taskRequestDTO.getTitle(), taskRequestDTO.getDueDate());
+        Long userId = currentUserService.getCurrentUserId();
+        validateCreate(taskRequestDTO.getTitle(), taskRequestDTO.getDueDate(), userId);
 
-        User user = findUserById(taskRequestDTO.getUserId());
+        User user = userRepository.getReferenceById(userId);
         Category category = findOrDefaultCategory(taskRequestDTO.getCategoryId());
         TaskStatus taskStatus = findOrDefaultStatus(taskRequestDTO.getTaskStatusId());
 
@@ -56,17 +62,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskPageResponseDto listAllTasks(Pageable pageable) {
-        Page<Task> tasks = taskRepository.findAllActive(pageable);
+        Long userId = currentUserService.getCurrentUserId();
+        Page<Task> tasks = taskRepository.findAllActiveByUserId(userId, pageable);
         return TaskPageResponseDto.fromPage(tasks);
     }
 
     @Override
     @Transactional
     public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDTO) {
+        Long userId = currentUserService.getCurrentUserId();
+        validateUpdate(taskRequestDTO.getTitle(), id, taskRequestDTO.getDueDate(), userId);
 
-        validateUpdate(taskRequestDTO.getTitle(), id, taskRequestDTO.getDueDate());
-
-        Task task = getTaskEntityById(id);
+        Task task = getTaskEntityById(id, userId);
 
         task.setTitle(taskRequestDTO.getTitle());
         task.setDescription(taskRequestDTO.getDescription());
@@ -80,27 +87,39 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void deleteTask(Long id) {
-        Task task = getTaskEntityById(id);
+        Long userId = currentUserService.getCurrentUserId();
+        Task task = getTaskEntityById(id, userId);
         task.setDeletedAt(LocalDateTime.now());
         taskRepository.save(task);
     }
 
     @Override
     public TaskResponseDto findTaskById(Long id) {
-        return TaskMapper.toTaskDto(getTaskEntityById(id));
+        Long userId = currentUserService.getCurrentUserId();
+        return TaskMapper.toTaskDto(getTaskEntityById(id, userId));
     }
 
     @Override
     public TaskResponseDto findByTaskTitle(String title){
-        Task task = taskRepository.findActiveByTitle(title)
+        Long userId = currentUserService.getCurrentUserId();
+
+        Task task = taskRepository.findActiveByTitleAndUserId(title, userId)
                 .orElseThrow(()-> new ResourceNotFoundException("Task not found"));
         return TaskMapper.toTaskDto(task);
     }
 
-    public Task getTaskEntityById(Long id){
-        return taskRepository.findActiveById(id).orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+    public Task getTaskEntityById(Long id, Long userId) {
+        Task task = taskRepository.findActiveById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        if (!task.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can't access this task");
+        }
+
+        return task;
     }
 
+    //Método reservado para uso futuro por admin ou casos específicos
     private User findUserById(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -130,17 +149,18 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private void validateCreate(String name, LocalDateTime date){
+    private void validateCreate(String name, LocalDateTime date, Long userId){
         validateDueDate(date);
         validateRequiredField(name, "Task title");
         validateDuplicateOnCreate(name,"Task",
-                taskRepository::findActiveByTitle);
+                title -> taskRepository.findActiveByTitleAndUserId(title, userId));
     }
 
-    private void validateUpdate(String name, Long id, LocalDateTime date){
+    private void validateUpdate(String name, Long id, LocalDateTime date, Long userId){
         validateDueDate(date);
         validateRequiredField(name, "Task title");
         validateDuplicateOnUpdate(name, id, "Task",
-                taskRepository::findActiveByTitle, Task::getId);
+                title -> taskRepository.findActiveByTitleAndUserId(title, userId),
+                Task::getId);
     }
 }

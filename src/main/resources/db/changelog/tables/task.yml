@@ -64,3 +64,8 @@ databaseChangeLog:
                   baseTableName: task
                   referencedColumnNames: id
                   referencedTableName: task_status
+              - addUniqueConstraint:
+                  tableName: task
+                  columnNames: user_id, title
+                  constraintName: uk_task_user_title
+

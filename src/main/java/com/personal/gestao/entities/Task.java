@@ -14,7 +14,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Table(name = "task")
+@Table(
+        name = "task",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"user_id", "title"},
+                name = "uk_task_user_title"
+        )
+)
 public class Task extends BaseEntity {
 
     @Id

@@ -1,5 +1,6 @@
 package com.personal.gestao.config.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,21 +19,31 @@ public class JWTUtils {
     @Value("${SPRING_APP_JWT_EXPIRATION}")
     private long jwtExpirationMs;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Long userId, String email) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(String.valueOf(userId))
+                .claim("id", userId)
+                .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return Long.valueOf(claims.get("id").toString());
+    }
+
+    public String getEmailFromToken(String token) {
+        return getAllClaimsFromToken(token).get("email", String.class);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public boolean validateToken(String token) {
